@@ -1,0 +1,18 @@
+{
+    "port": 1000,
+    "child_jobs": [
+        {
+            "command": "ssh",
+            "arguments":  ["-N","-L","8889:localhost:8889","foo"]
+        },
+        {
+            "command": "ssh",
+            "arguments":  ["-N","-L","6006:localhost:6006","bar"]
+        }
+    ],
+    "main_job": {
+        "command": "ping",
+        "arguments": ["bar"],
+        "failure_errors":  ["ping: cannot resolve bar: Unknown host", "Request timeout"]
+    }
+}
