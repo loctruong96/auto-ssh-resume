@@ -4,12 +4,9 @@ const app = express()
 const port = config.port
 const child_jobs = config.child_jobs
 const main_job = config.main_job
-const { exec } = require("child_process");
 const { spawn } = require("child_process");
-const { stdout } = require('process')
-const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants')
-const { stat } = require('fs')
 
+let main_job_fail_counter = 0
 let tracking = false;
 const status = {
   "main_job": main_job,
@@ -26,7 +23,8 @@ for (let i=0; i < child_jobs.length; i++){
 function start_all_childs_jobs(){
   for(let i = 0; i < status.child_jobs.length; i++){
     if (status["child_jobs"][i]["running"] == false && status["main_job"]["running"] == true ){
-      console.log("child jobs started");
+      const job_name = status.child_jobs[i].command + " " + (status.child_jobs[i].arguments).join(" ")
+      console.log(`${job_name} started!`);
       const child_job_instance = spawn(status["child_jobs"][i]["command"], status["child_jobs"][i]["arguments"]);
       status["child_jobs"][i]["running"] = true;
       status["child_jobs"][i]["instance"] = child_job_instance;
@@ -44,36 +42,38 @@ function stop_all_child_jobs(){
     }
   }
 }
+function stop_all(){
+  status["main_job"]["running"] = false;
+  console.log(`main job is dead, stopping child jobs!`);
+  status["main_job"]["instance"].stdin.pause();
+  status["main_job"]["instance"].kill("SIGKILL");
+  tracking = false;
+  main_job_fail_counter = 0
+  stop_all_child_jobs();
+}
 function begin_tracking(){
   status["main_job"]["instance"].on("close", code => {
-    status["main_job"]["running"] = false;
-    // console.log(`main job exited with code ${code}`);
-    stop_all_child_jobs();
-    status["main_job"]["instance"].stdin.pause();
-    status["main_job"]["instance"].kill("SIGKILL");
-    tracking = false;
+    stop_all();
   });
   status["main_job"]["instance"].stdout.on("data", data => {
     if (data.includes("Request timeout")){
-      status["main_job"]["running"] = false;
-      console.log(`main job is dead, stopping child jobs!`);
-      status["main_job"]["instance"].stdin.pause();
-      status["main_job"]["instance"].kill("SIGKILL");
-      tracking = false;
-      stop_all_child_jobs();
+      main_job_fail_counter += 1
+      console.log(`Instability detected, ${config.main_job.wiggle - main_job_fail_counter} wiggle left before reboot jobs.`)
+      if (main_job_fail_counter >= config.main_job.wiggle){
+        stop_all();
+      }
     } else if (data.includes("bytes")) {
       tracking = true;
       // console.log(`main job is alive!`);
+      if (main_job_fail_counter != 0) {
+        main_job_fail_counter = 0;
+        console.log(`Connection stabilized!`)
+      }
       start_all_childs_jobs();
     }
   });
   status["main_job"]["instance"].on("error", error => {
-    status["main_job"]["running"] = false;
-    // console.log(`main job failed with error ${error}`);
-    status["main_job"]["instance"].stdin.pause();
-    status["main_job"]["instance"].kill("SIGKILL");
-    tracking = false;
-    stop_all_child_jobs();
+    stop_all();
   });
 }
 
