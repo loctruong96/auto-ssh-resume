@@ -1,7 +1,7 @@
 {
   "name": "auto-ssh-resume",
   "version": "1.0.0",
-  "description": "",
+  "description": "A basic webserver that keep track of ssh connections and keep trying to reconnect regardless of network conditions.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

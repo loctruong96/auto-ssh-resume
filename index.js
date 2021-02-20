@@ -9,18 +9,6 @@ const { spawn } = require("child_process");
 const { stdout } = require('process')
 const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants')
 const { stat } = require('fs')
-/*
-example status object
-{
-  "main_job_running": true,
-  "child_jobs": [
-    {
-      "job": "ssh cheese",
-      "running": true
-    }
-  ]
-}
-*/
 
 let tracking = false;
 const status = {
@@ -34,7 +22,7 @@ for (let i=0; i < child_jobs.length; i++){
   child_job["running"] = false;
   status["child_jobs"].push(child_job)
 }
-console.log(status["child_jobs"][0]["arguments"])
+
 function start_all_childs_jobs(){
   for(let i = 0; i < status.child_jobs.length; i++){
     if (status["child_jobs"][i]["running"] == false && status["main_job"]["running"] == true ){
@@ -59,7 +47,7 @@ function stop_all_child_jobs(){
 function begin_tracking(){
   status["main_job"]["instance"].on("close", code => {
     status["main_job"]["running"] = false;
-    console.log(`main job exited with code ${code}`);
+    // console.log(`main job exited with code ${code}`);
     stop_all_child_jobs();
     status["main_job"]["instance"].stdin.pause();
     status["main_job"]["instance"].kill("SIGKILL");
@@ -75,13 +63,13 @@ function begin_tracking(){
       stop_all_child_jobs();
     } else if (data.includes("bytes")) {
       tracking = true;
-      console.log(`main job is alive!`);
+      // console.log(`main job is alive!`);
       start_all_childs_jobs();
     }
   });
   status["main_job"]["instance"].on("error", error => {
     status["main_job"]["running"] = false;
-    console.log(`main job failed with error ${error}`);
+    // console.log(`main job failed with error ${error}`);
     status["main_job"]["instance"].stdin.pause();
     status["main_job"]["instance"].kill("SIGKILL");
     tracking = false;
