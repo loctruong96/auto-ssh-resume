@@ -44,7 +44,6 @@ function stop_all_child_jobs(){
 }
 function stop_all(){
   status["main_job"]["running"] = false;
-  console.log(`main job is dead, stopping child jobs!`);
   status["main_job"]["instance"].stdin.pause();
   status["main_job"]["instance"].kill("SIGKILL");
   tracking = false;
