@@ -13,6 +13,7 @@
     "main_job": {
         "command": "ping",
         "arguments": ["bar"],
-        "failure_errors":  ["ping: cannot resolve bar: Unknown host", "Request timeout"]
+        "failure_errors":  ["ping: cannot resolve bar: Unknown host", "Request timeout"],
+        "wiggle": 3
     }
 }
