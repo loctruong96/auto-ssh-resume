@@ -26,9 +26,21 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 ```
 Checks out https://github.com/nvm-sh/nvm/blob/master/README.md for more detailed instruction.
 
-## setup passwordless ssh
+Try `nvm --version` to check if nvm is installed and loaded.
+
+After `nvm` is installed. Run `nvm install node`. Try `node --verison` to ensure Node.JS is installed. 
+
+
+## setup dependencies
+
+Navigate to `auto-ssh-resume` and type `npm install` to install all Node.JS dependencies for this app.
+
+## Setup passwordless ssh
 
 You must have already setup passwordless ssh for this app to work.
+
+
+
 ## Setup config.json file
 
 The `config.json` file controls the app. `main_job` pings a server to check if the connection is set. If it is start `child_jobs` else kills all `child_jobs`. An example usage for this application is handling tunnels connection of jupyter notesbook. If the connection to the server is unstable the ssh connection is killed and restart once the connection is stable. This is done so that you won't have to manually kill and restart your ssh tunnels. `wiggle` controls how many time `ping` can fail before killing `child_jobs`. `port` controls which local port this web app is running on. You may visit this local port to on a web browser to see more information. An example `config.json` format is listed below. 
