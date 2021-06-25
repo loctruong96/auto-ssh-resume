@@ -54,3 +54,26 @@ The `config.json` file controls the app. `main_job` pings a server to check if t
     }
 }
 ```
+
+## Starting the app
+
+To start the app, navigate to `auto-ssh-resume` and type `node index.js`. An example run is below:
+
+```console
+auto-ssh-resume$ node index.js
+Listening at http://localhost:1000
+ssh -N -L 5000:localhost:5000 foo started!
+ssh -N -L 9000:localhost:9000 bar started!
+Instability detected, 2 wiggle left before reboot jobs.
+Connection stabilized!
+Instability detected, 2 wiggle left before reboot jobs.
+Instability detected, 1 wiggle left before reboot jobs.
+Connection stabilized!
+Instability detected, 2 wiggle left before reboot jobs.
+Connection stabilized!
+Instability detected, 2 wiggle left before reboot jobs.
+Connection stabilized!
+Instability detected, 2 wiggle left before reboot jobs.
+Connection stabilized!
+```
+
