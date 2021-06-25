@@ -3,16 +3,33 @@
     "child_jobs": [
         {
             "command": "ssh",
-            "arguments":  ["-N","-L","8889:localhost:8889","foo"]
+            "arguments":  ["-N","-L","8889:localhost:8889","cheese"]
         },
         {
             "command": "ssh",
-            "arguments":  ["-N","-L","6006:localhost:6006","bar"]
+            "arguments":  ["-N","-L","6006:localhost:6006","cheese"]
+        },
+        {
+            "command": "ssh",
+            "arguments":  ["-N","-L","8888:localhost:8888","bogie"]
+        },
+        {
+            "command": "ssh",
+            "arguments":  ["-N","-L","5000:localhost:5000","sandtrap"]
+        },
+        {
+            "command": "ssh",
+            "arguments":  ["-N","-L","8887:localhost:8887","steak"]
+        },
+	{
+            "command": "ssh",
+            "arguments":  ["-N","-L","9000:localhost:8889","ohmahgerd"]
         }
     ],
     "main_job": {
         "command": "ping",
-        "arguments": ["bar"],
-        "failure_errors":  ["ping: cannot resolve bar: Unknown host", "Request timeout"]
+        "arguments": ["cheese"],
+        "failure_errors":  ["ping: cannot resolve cheese: Unknown host", "Request timeout"],
+        "wiggle": 3
     }
 }
