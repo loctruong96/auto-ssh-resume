@@ -31,7 +31,7 @@ Try `nvm --version` to check if nvm is installed and loaded.
 After `nvm` is installed. Run `nvm install node`. Try `node --verison` to ensure Node.JS is installed. 
 
 
-## setup dependencies
+## Setup dependencies
 
 Navigate to `auto-ssh-resume` and type `npm install` to install all Node.JS dependencies for this app.
 
@@ -74,7 +74,7 @@ To start the app, navigate to `auto-ssh-resume` and type `node index.js`. An exa
 ```console
 auto-ssh-resume$ node index.js
 Listening at http://localhost:1000
-ssh -N -L 5000:localhost:5000 foo started!
+ssh -N -L 5555:localhost:5555 foo started!
 ssh -N -L 9000:localhost:9000 bar started!
 Instability detected, 2 wiggle left before reboot jobs.
 Connection stabilized!
@@ -89,3 +89,48 @@ Instability detected, 2 wiggle left before reboot jobs.
 Connection stabilized!
 ```
 
+## Child job instability
+
+The app will detect if child ssh connection is interrupted and continuously attempt to resume every 3 seconds. 
+```console
+auto-ssh-resume$ node index.js
+Listening at http://localhost:5555
+ssh -N -L 1111:localhost:1111 foo started!
+ssh -N -L 2222:localhost:2222 foo started!
+ssh -N -L 3333:localhost:3333 foo started!
+ssh -N -L 4444:localhost:4444 foo started!
+child 2 error: Connection to foo closed by remote host.
+. Waiting for 3 seconds before retry.
+child ssh -N -L 1111:localhost:1111 foo stopped.
+child 0 error: Connection to foo closed by remote host.
+. Waiting for 3 seconds before retry.
+child ssh -N -L 2222:localhost:2222 foo stopped.
+child 1 error: Connection to foo closed by remote host.
+. Waiting for 3 seconds before retry.
+child ssh -N -L 4444:localhost:4444 foo stopped.
+child 3 error: Connection to foo closed by remote host.
+. Waiting for 3 seconds before retry.
+child 2 is available again.
+ssh -N -L 3333:localhost:3333 foo started!
+child ssh -N -L 3333:localhost:3333 foo stopped.
+child 2 error: ssh: connect to host foo port 922: Connection refused
+. Waiting for 3 seconds before retry.
+child 0 is available again.
+ssh -N -L 1111:localhost:1111 foo started!
+child ssh -N -L 1111:localhost:1111 foo stopped.
+child 0 error: ssh: connect to host foo port 922: Connection refused
+. Waiting for 3 seconds before retry.
+child 1 is available again.
+ssh -N -L 2222:localhost:2222 foo started!
+child ssh -N -L 2222:localhost:2222 foo stopped.
+child 1 error: ssh: connect to host foo port 922: Connection refused
+. Waiting for 3 seconds before retry.
+child 3 is available again.
+child 2 is available again.
+child 0 is available again.
+ssh -N -L 1111:localhost:1111 foo started!
+ssh -N -L 3333:localhost:3333 foo started!
+ssh -N -L 4444:localhost:4444 foo started!
+child 1 is available again.
+ssh -N -L 2222:localhost:2222 foo started!
+```
